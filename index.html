@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .container {
+      display: inline-block;
+      width: 200px;
+      height: 300px;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .item {
+      margin-bottom: 10px;
+      padding: 5px;
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+    .item:hover {
+      background-color: #e0e0e0;
+    }
+    .success {
+      background-color: #c0f0c0;
+    }
+    .dragging {
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container1">
+    <div class="item" draggable="true" ondragstart="startDrag(event)">Item 1</div>
+    <div class="item" draggable="true" ondragstart="startDrag(event)">Item 2</div>
+    <div class="item" draggable="true" ondragstart="startDrag(event)">Item 3</div>
+  </div>
+  <div class="container" id="container2" ondragover="allowDrop(event)" ondrop="drop(event)">
+    Drop here
+  </div>
+  <button onclick="resetContainers()">Reset</button>
+
+  <script>
+    var draggedItem = null;
+
+    function startDrag(event) {
+      draggedItem = event.target;
+      event.dataTransfer.setData("text/plain", ""); // Firefox requires this line to allow dragging
+      draggedItem.classList.add("dragging");
+    }
+
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    function drop(event) {
+      event.preventDefault();
+      var container2 = document.getElementById("container2");
+      container2.appendChild(draggedItem);
+      draggedItem.classList.remove("dragging");
+      draggedItem.classList.add("success");
+      draggedItem.draggable = false;
+      draggedItem = null;
+    }
+
+    function resetContainers() {
+      var container1 = document.getElementById("container1");
+      var container2 = document.getElementById("container2");
+      var items = container2.getElementsByClassName("item");
+
+      while (items.length > 0) {
+        container1.appendChild(items[0]);
+        items[0].classList.remove("success");
+        items[0].classList.remove("dragging");
+        items[0].draggable = true;
+        items[0].ondragstart = function(event) { startDrag(event); }; // Reattach the event listener
+      }
+    }
+  </script>
+</body>
+</html>
